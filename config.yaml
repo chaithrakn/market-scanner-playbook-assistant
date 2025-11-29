@@ -1,0 +1,8 @@
+scan_interval_seconds: 10
+gap_threshold_percent: 10.0
+tickers:
+- AAPL
+- MSFT
+- TSLA
+- AMD
+- NVDA

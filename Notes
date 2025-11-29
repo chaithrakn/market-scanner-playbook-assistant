@@ -1,0 +1,22 @@
+How to use
+
+Save the file as replay_runner.py in your project root.
+
+Ensure you have dependencies installed (same as before):
+
+python -m pip install fastapi uvicorn yfinance pydantic httpx
+
+
+(You likely have these from the starter.)
+
+Run your FastAPI app in one terminal:
+
+python app.py
+
+
+In another terminal run the replay script:
+
+python replay_runner.py
+
+
+Open http://localhost:8000/ — the frontend polls /inplay and will show the tickers and play the beep when it sees new rows.

@@ -1,0 +1,65 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Market Scanner - Playbook Assistant (Starter)</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px }
+    table { border-collapse: collapse; width: 100% }
+    th, td { border: 1px solid #ddd; padding: 8px }
+    th { background: #f4f4f4 }
+    .inplay { background: #e6ffe6 }
+  </style>
+</head>
+<body>
+  <h2>Market Scanner - In-Play</h2>
+  <div id="last">Last update: --</div>
+  <table id="tbl">
+    <thead><tr><th>Ticker</th><th>Reason</th><th>Entry</th><th>Last</th><th>Timestamp</th></tr></thead>
+    <tbody></tbody>
+  </table>
+
+<script>
+let seen = new Set();
+async function fetchInplay(){
+  try{
+    const res = await fetch('/inplay');
+    const data = await res.json();
+    const tbody = document.querySelector('#tbl tbody');
+    tbody.innerHTML = '';
+    let anyNew = false;
+    data.inplay.forEach(item =>{
+      const tr = document.createElement('tr');
+      tr.className = 'inplay';
+      tr.innerHTML = `<td>${item.ticker}</td><td>${item.reason}</td><td>${item.entry}</td><td>${item.last_price}</td><td>${new Date(item.ts*1000).toLocaleTimeString()}</td>`;
+      tbody.appendChild(tr);
+      if(!seen.has(item.ticker)){
+        anyNew = true;
+        seen.add(item.ticker);
+      }
+    });
+    document.getElementById('last').innerText = 'Last update: ' + new Date().toLocaleTimeString();
+    if(anyNew) playBeep();
+  }catch(e){
+    console.error(e);
+  }
+}
+
+function playBeep(){
+  const ctx = new (window.AudioContext || window.webkitAudioContext)();
+  const o = ctx.createOscillator();
+  const g = ctx.createGain();
+  o.type = 'sine';
+  o.frequency.value = 880;
+  o.connect(g);
+  g.connect(ctx.destination);
+  o.start();
+  g.gain.exponentialRampToValueAtTime(0.00001, ctx.currentTime + 0.4);
+  setTimeout(()=>o.stop(), 400);
+}
+
+setInterval(fetchInplay, 5000);
+fetchInplay();
+</script>
+</body>
+</html>
